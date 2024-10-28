@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON时间戳转换器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 替换为 Prism.js 的 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .container-fluid {
+            padding: 20px;
+            height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: calc(100vh - 40px);
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            padding: 10px 25px;
+        }
+        /* 统一左右两边容器的样式 */
+        .input-container, .code-container {
+            height: calc(100% - 60px);
+            border-radius: 8px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            overflow: auto;
+            position: relative;
+        }
+        .title-row {
+            margin-bottom: 20px;
+        }
+        .side-label {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        #jsonInput {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            background: transparent;
+            color: #000;  /* 修改：让文字可见 */
+            z-index: 1;
+            border: none;  /* 添加：移除边框 */
+        }
+        #jsonInput:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        pre {
+            margin: 0;
+            height: 100%;
+        }
+        #jsonOutput {
+            padding: 15px;
+            margin: 0;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+            opacity: 0.7;
+        }
+        .copy-btn:hover {
+            opacity: 1;
+        }
+        /* 自定义高亮样式 */
+        .hljs-string { color: #22863a; }
+        .hljs-number { color: #005cc5; }
+        .hljs-attr { color: #6f42c1; }
+        /* 调整 Prism.js 的样式 */
+        pre[class*="language-"] {
+            margin: 0;
+            border-radius: 8px;
+            max-height: 100%;
+            height: 100%;
+            background: white;
+        }
+        code[class*="language-"] {
+            font-size: 14px;
+            padding: 15px !important;
+            background: white;
+        }
+        .token.property { 
+            color: #6f42c1; 
+        }
+        .token.string { 
+            color: #22863a; 
+        }
+        .token.number { 
+            color: #005cc5; 
+        }
+        .line-numbers .line-numbers-rows {
+            border-right: none;
+            padding: 15px 0;
+        }
+
+        /* 修改代码容器相关样式 */
+        .code-container {
+            height: calc(100% - 60px);
+            border-radius: 8px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            position: relative;
+        }
+
+        /* 重置 pre 样式 */
+        pre[class*="language-"] {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            background: white !important;
+        }
+
+        /* 重置 code 样式 */
+        code[class*="language-"] {
+            white-space: pre !important;
+            word-wrap: normal !important;
+            word-break: normal !important;
+            font-size: 14px !important;
+            padding: 15px !important;
+            background: transparent !important;
+        }
+
+        /* 调整行号样式 */
+        .line-numbers .line-numbers-rows {
+            border-right: 1px solid #ddd !important;
+            padding: 15px 0;
+        }
+
+        /* 确保滚动条正确显示 */
+        .code-container {
+            overflow: auto;
+        }
+        
+        pre[class*="language-"].line-numbers {
+            padding-left: 3.8em !important;
+        }
+
+        /* 调整复制按钮位置 */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+            opacity: 0.7;
+            background: white;
+        }
+
+        /* 修改左侧输入区域的代码 */
+        .input-container {
+            position: relative;
+            height: calc(100% - 60px);
+        }
+        
+        .input-display {
+            margin: 0 !important;
+            background: white !important;
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;  /* 添加：确保在输入框下层 */
+        }
+
+        /* 修改左侧输入区域的结构 */
+        .input-container {
+            position: relative;
+            height: calc(100% - 60px);
+            border-radius: 8px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            overflow: auto;
+        }
+
+        #jsonDisplay {
+            outline: none;
+            white-space: pre !important;
+            word-wrap: normal !important;
+            word-break: normal !important;
+            padding: 15px !important;
+        }
+
+        [contenteditable="true"]:empty:before {
+            content: '{"timestamp": 1709715632000}';
+            color: #6c757d;
+            opacity: 0.6;
+        }
+
+        .format-selector {
+            width: 200px;
+        }
+        .custom-format {
+            width: 200px;
+        }
+        .form-select {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="card p-4">
+            <div class="row title-row">
+                <div class="col-12">
+                    <h2 class="text-center">JSON时间戳转换器</h2>
+                </div>
+            </div>
+            <div class="row h-100">
+                <div class="col-5">
+                    <div class="side-label">输入JSON字符串</div>
+                    <div class="input-container">
+                        <textarea id="jsonInput" 
+                            class="form-control"
+                            placeholder='{"timestamp": 1709715632000, "createTime": 1709715632}'
+                            spellcheck="false"></textarea>
+                    </div>
+                </div>
+                <div class="col-2 d-flex flex-column align-items-center justify-content-center">
+                    <div class="format-selector mb-3">
+                        <label class="form-label">时间格式</label>
+                        <select class="form-select" id="dateFormat">
+                            <option value="yyyy-MM-dd HH:mm:ss">yyyy-MM-dd HH:mm:ss</option>
+                            <option value="yyyy/MM/dd HH:mm:ss">yyyy/MM/dd HH:mm:ss</option>
+                            <option value="yyyy年MM月dd日 HH:mm:ss">yyyy年MM月dd日 HH:mm:ss</option>
+                            <option value="yyyy-MM-dd">yyyy-MM-dd</option>
+                            <option value="HH:mm:ss">HH:mm:ss</option>
+                            <option value="custom">自定义格式...</option>
+                        </select>
+                    </div>
+                    <div class="custom-format mb-3" style="display: none;">
+                        <input type="text" class="form-control" id="customFormat" 
+                            placeholder="例如: yyyy年MM月dd日 HH时mm分ss秒"
+                            style="width: 200px;">
+                    </div>
+                    <button class="btn btn-primary" onclick="convertTimestamp()">转换 →</button>
+                </div>
+                <div class="col-5">
+                    <div class="side-label">转换结果</div>
+                    <div class="code-container">
+                        <button class="btn btn-sm btn-light copy-btn" onclick="copyResult()">
+                            复制
+                        </button>
+                        <pre class="line-numbers"><code class="language-json" id="jsonOutput"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 替换为 Prism.js 的脚本 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    
+    <script>
+        // 格式化 JSON 的公共函数
+        function formatJSON(jsonString) {
+            try {
+                const obj = JSON.parse(jsonString);
+                return JSON.stringify(obj, null, 2);
+            } catch (e) {
+                return jsonString;
+            }
+        }
+
+        function handlePaste(event) {
+            event.preventDefault();
+            const text = event.clipboardData.getData('text');
+            try {
+                const obj = JSON.parse(text);
+                const formatted = JSON.stringify(obj, null, 2);
+                event.target.textContent = formatted;
+                Prism.highlightElement(event.target);
+            } catch (e) {
+                event.target.textContent = text;
+                Prism.highlightElement(event.target);
+            }
+        }
+
+        function handleInput(event) {
+            try {
+                const text = event.target.textContent;
+                if (text.trim()) {
+                    const obj = JSON.parse(text);
+                    const formatted = JSON.stringify(obj, null, 2);
+                    if (formatted !== text) {
+                        event.target.textContent = formatted;
+                    }
+                }
+                Prism.highlightElement(event.target);
+            } catch (e) {
+                // 如果不是有效的 JSON，保持原样
+            }
+        }
+
+        function formatInput() {
+            const input = document.getElementById('jsonInput');
+            try {
+                const obj = JSON.parse(input.value);
+                input.value = JSON.stringify(obj, null, 2);
+            } catch (e) {
+                // 如果不是有效的 JSON，保持原样
+            }
+        }
+
+        // 监听粘贴事件
+        document.getElementById('jsonInput').addEventListener('paste', function() {
+            setTimeout(formatInput, 0);
+        });
+
+        function formatDate(timestamp, format) {
+            const date = new Date(timestamp);
+            
+            const formatMap = {
+                'yyyy': date.getFullYear(),
+                'MM': String(date.getMonth() + 1).padStart(2, '0'),
+                'dd': String(date.getDate()).padStart(2, '0'),
+                'HH': String(date.getHours()).padStart(2, '0'),
+                'mm': String(date.getMinutes()).padStart(2, '0'),
+                'ss': String(date.getSeconds()).padStart(2, '0')
+            };
+            
+            let result = format;
+            for (let key in formatMap) {
+                result = result.replace(key, formatMap[key]);
+            }
+            
+            return result;
+        }
+
+        function convertTimestamp() {
+            try {
+                const input = document.getElementById('jsonInput');
+                let jsonObj;
+                
+                try {
+                    jsonObj = JSON.parse(input.value);
+                    input.value = JSON.stringify(jsonObj, null, 2);
+                } catch (e) {
+                    throw new Error('请输入有效的 JSON 格式');
+                }
+
+                const formatSelect = document.getElementById('dateFormat');
+                const customFormatInput = document.getElementById('customFormat');
+                let dateFormat = formatSelect.value;
+                
+                if (dateFormat === 'custom') {
+                    dateFormat = customFormatInput.value || 'yyyy-MM-dd HH:mm:ss';
+                }
+
+                function traverse(obj) {
+                    for (let key in obj) {
+                        if (typeof obj[key] === 'number' && 
+                            (String(obj[key]).length === 10 || String(obj[key]).length === 13)) {
+                            let timestamp = obj[key];
+                            if (String(timestamp).length === 10) {
+                                timestamp *= 1000;
+                            }
+                            obj[key] = formatDate(timestamp, dateFormat);
+                        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                            traverse(obj[key]);
+                        }
+                    }
+                }
+
+                traverse(jsonObj);
+                const formattedJson = JSON.stringify(jsonObj, null, 2);
+                const outputElement = document.getElementById('jsonOutput');
+                outputElement.textContent = formattedJson;
+                
+                Prism.highlightElement(outputElement);
+            } catch (error) {
+                const outputElement = document.getElementById('jsonOutput');
+                outputElement.textContent = '错误：' + error.message;
+                Prism.highlightElement(outputElement);
+            }
+        }
+
+        function copyResult() {
+            const output = document.getElementById('jsonOutput');
+            navigator.clipboard.writeText(output.textContent).then(() => {
+                const copyBtn = document.querySelector('.copy-btn');
+                copyBtn.textContent = '已复制！';
+                setTimeout(() => {
+                    copyBtn.textContent = '复制';
+                }, 2000);
+            });
+        }
+
+        // 添加初始化代码
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化 Prism.js
+            Prism.highlightAll();
+            // 移除这些不需要的焦点事件
+            /*
+            const input = document.getElementById('jsonInput');
+            input.addEventListener('focus', () => {
+                input.style.opacity = '0.2';
+            });
+            input.addEventListener('blur', () => {
+                input.style.opacity = '0.1';
+            });
+            */
+
+            const formatSelect = document.getElementById('dateFormat');
+            const customFormat = document.querySelector('.custom-format');
+            
+            formatSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customFormat.style.display = 'block';
+                } else {
+                    customFormat.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

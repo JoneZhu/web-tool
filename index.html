@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web工具集</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .container {
+            padding: 40px 20px;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+        .tool-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+            color: inherit;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: inherit;
+        }
+        .tool-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .tool-icon img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+        .tool-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .tool-description {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        .page-title {
+            color: #212529;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .page-description {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Web工具集</h1>
+        <p class="page-description">实用的在线工具集合，提高工作效率</p>
+        
+        <div class="tools-grid">
+            <!-- JSON格式化工具 -->
+            <a href="format-json-timestamp-data.html" class="tool-card">
+                <div class="tool-icon">
+                    <img src="placeholder-icon.png" alt="JSON工具图标">
+                </div>
+                <div class="tool-name">JSON时间戳转换器</div>
+                <p class="tool-description">格式化JSON数据并转换时间戳为可读格式，支持自定义时间格式</p>
+            </a>
+
+            <!-- 照片分片工具 -->
+            <a href="photo-slicer.html" class="tool-card">
+                <div class="tool-icon">
+                    <img src="placeholder-icon.png" alt="照片分片工具图标">
+                </div>
+                <div class="tool-name">照片分片工具</div>
+                <p class="tool-description">将照片分割成多个小片段，支持自定义分割方式</p>
+            </a>
+
+            <!-- 预留的工具卡片模板 -->
+            <a href="#" class="tool-card" style="opacity: 0.5;">
+                <div class="tool-icon">
+                    <img src="placeholder-icon.png" alt="更多工具">
+                </div>
+                <div class="tool-name">更多工具</div>
+                <p class="tool-description">更多实用工具正在开发中...</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
