@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分片工具</title>
+    <link rel="stylesheet" href="styles.css?v=1.0.3">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+        .title {
+            color: #545353; /* 浅灰色 */
+            text-align: center;
+            padding-bottom: 10px;
+            position: relative;
+        }
+        .title::after {
+            content: '';
+            display: block;
+            width: 80%;
+            height: 1px;
+            background-color: #D3D3D3; /* 浅灰色 */
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">分片工具</h1>
+        
+        
+        <div class="input-group">
+            <button id="selectSourceBtn">选择大图文件夹</button>
+            <input type="text" id="sourcePath" readonly>
+        </div>
+        
+        <div class="input-group">
+            <button id="selectTargetBtn">选择小图文件夹</button>
+            <input type="text" id="targetPath" readonly>
+        </div>
+
+        <div class="input-group">
+            <button id="startCopyBtn">开始复制</button>
+        </div>
+
+        <div id="fileListContainer"></div>
+    </div>
+
+    <script src="script.js?v=1.0.3"></script>
+</body>
+</html>
